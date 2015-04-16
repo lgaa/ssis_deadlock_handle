@@ -14,21 +14,77 @@ CREATE TABLE [Data].[Numbers](
 
 GO
 
+DECLARE @i INT;
+
+SET NOCOUNT ON;
+
+SET @i=0;
+
+WHILE(@i<1000) BEGIN
+
+  INSERT Data.numbers(Number)VALUES(@i);
+
+  SET @i=@i+1;
+
+END;
+
+GO
+
+
 USE [test1]
 GO
 
-/****** Object:  Table [Data].[Numbers]    Script Date: 4/14/2015 11:03:21 AM ******/
+/****** Object:  Table [Data].[Test]    Script Date: 4/14/2015 11:03:21 AM ******/
 SET ANSI_NULLS ON
 GO
 
 SET QUOTED_IDENTIFIER ON
 GO
 
-CREATE TABLE [Data].[Numbers](
-	[Number] [int] NULL
-) ON [PRIMARY]
+CREATE TABLE Data.Test(ID INT NOT NULL CONSTRAINT PK_Test PRIMARY KEY,
+
+      i1 INT NOT NULL, 
+
+      i2 INT NOT NULL, 
+
+      toggle1 INT NOT NULL, 
+
+      toggle2 INT NOT NULL, 
+
+      filler CHAR(200));
 
 GO
+INSERT INTO Data.Test(ID, i1, i2, toggle1, toggle2, filler)
+
+  SELECT n1.Number*1000 + n2.Number, 
+
+            n2.Number*1000 + n1.Number, 
+
+            1000000 - n2.Number*1000 - n1.Number,
+
+            0, 
+
+            0, 
+
+            'qwerty'
+
+  FROM Data.Numbers AS n1 CROSS JOIN Data.Numbers AS n2
+
+  WHERE n1.Number<1000 AND n2.Number<1000;
+
+GO
+
+CREATE UNIQUE INDEX UNQ_Test_i1 ON Data.Test(i1);
+
+GO
+
+CREATE UNIQUE INDEX UNQ_Test_i2 ON Data.Test(i2);
+
+GO
+
+
+
+
 
 USE [test1]
 GO
@@ -55,6 +111,7 @@ BEGIN
 END;
 
 GO
+
 
 
 USE [test1]
